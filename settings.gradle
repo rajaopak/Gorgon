@@ -1,0 +1,5 @@
+rootProject.name = 'Gorgon-Gradle'
+
+include 'common'
+include 'base'
+include 'app'
