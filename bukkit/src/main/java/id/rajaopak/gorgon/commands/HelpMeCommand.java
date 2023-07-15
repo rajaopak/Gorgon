@@ -9,8 +9,8 @@ import id.rajaopak.gorgon.Gorgon;
 import id.rajaopak.gorgon.config.LanguageFile;
 import id.rajaopak.gorgon.enums.FilterState;
 import id.rajaopak.gorgon.enums.HelpMeState;
-import id.rajaopak.gorgon.gui.HelpMeGui;
-import id.rajaopak.gorgon.object.HelpMeData;
+import id.rajaopak.gorgon.module.helpme.gui.HelpMeGui;
+import id.rajaopak.gorgon.module.helpme.HelpMeData;
 import id.rajaopak.gorgon.utils.PermissionChecker;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -38,7 +38,7 @@ public class HelpMeCommand extends BaseCommand {
     @CommandMethod("helpme [message]")
     @CommandPermission("gorgon.helpme.use")
     public void mainCommand(@NonNull CommandSender sender, @Nullable @Greedy @Argument(value = "message") String message) {
-        if (PermissionChecker.check(sender, "helpme.use")) {
+        if (!PermissionChecker.check(sender, "helpme.use")) {
             ChatUtil.sendMessage(sender, LanguageFile.getNoPermission());
             return;
         }
@@ -85,7 +85,7 @@ public class HelpMeCommand extends BaseCommand {
     @CommandMethod("helpme --finish")
     @CommandPermission("gorgon.helpme.staff")
     public void helpMeFinishCommand(@NonNull CommandSender sender) {
-        if (PermissionChecker.check(sender, "helpme.staff")) {
+        if (!PermissionChecker.check(sender, "helpme.staff")) {
             ChatUtil.sendMessage(sender, LanguageFile.getNoPermission());
             return;
         }
