@@ -1,4 +1,4 @@
-rootProject.name = 'Gorgon-Gradle'
+rootProject.name = 'Gorgon'
 
 include 'bukkit'
 include 'common'
