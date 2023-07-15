@@ -1,38 +1,33 @@
 plugins {
     id 'com.github.sherter.google-java-format' version '0.9' apply false
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 allprojects {
-    version = '1.0'
+    version = '0.01'
 }
 
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'com.github.sherter.google-java-format'
+    apply plugin: 'com.github.johnrengelman.shadow'
 
     dependencies {
-        // for type inference
-        annotationProcessor 'org.projectlombok:lombok:1.18.12'
-        compileOnly 'org.projectlombok:lombok:1.18.12'
-        testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
-        testCompileOnly 'org.projectlombok:lombok:1.18.12'
+        annotationProcessor 'org.projectlombok:lombok:1.18.26'
 
-        // for logging
-        implementation 'ch.qos.logback:logback-classic:1.2.3'
-        implementation 'org.slf4j:slf4j-api:1.7.26'
+        implementation 'org.jetbrains:annotations:24.0.1'
 
-        implementation 'com.google.guava:guava:29.0-jre'
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
+        compileOnly 'org.spigotmc:spigot-api:1.17.1-R0.1-SNAPSHOT'
+        compileOnly 'org.projectlombok:lombok:1.18.26'
     }
 
     repositories {
-        jcenter()
+        mavenCentral()
+        mavenLocal()
     }
 
     test {
         useJUnitPlatform()
     }
 
-    compileJava.dependsOn tasks.googleJavaFormat
+    assemble.dependsOn shadowJar
 }

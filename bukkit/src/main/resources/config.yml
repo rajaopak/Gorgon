@@ -1,0 +1,15 @@
+# Gorgon Config
+debug: true
+
+server-name: "minecraft"
+
+database:
+  database: ""
+  host: "localhost"
+  port: 3306
+  username: "root"
+  password: ""
+  ssl: true
+  verify-certificate: true
+  pool-size: 30
+  max-lifetime: 1800000

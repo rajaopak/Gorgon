@@ -1,0 +1,6 @@
+name: Gorgon
+main: id.rajaopak.gorgon.Gorgon
+version: 0.1
+author: rajaopak
+description: Utility plugin
+api-version: 1.13

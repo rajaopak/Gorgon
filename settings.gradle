@@ -1,5 +1,5 @@
 rootProject.name = 'Gorgon-Gradle'
 
+include 'bukkit'
 include 'common'
-include 'base'
-include 'app'
+include 'versionsupport'
