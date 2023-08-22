@@ -19,6 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static net.kyori.adventure.text.Component.text;
 import static net.md_5.bungee.api.ChatColor.COLOR_CHAR;
 
 public class ChatUtil {
@@ -28,6 +29,12 @@ public class ChatUtil {
             Pattern.compile("(?i)^(" + COLOR_CHAR + "[0-9A-FK-ORX])+");
     private static final Pattern NEWLINE_PATTERN = Pattern.compile("\\\\n|\\{nl}");
     private static final Pattern COLOR = Pattern.compile("(?i)" + COLOR_CHAR + "[0-9A-FK-ORX]");
+
+    public static String PREFIX = "&8[&bOpakChat&8]";
+
+    public static void setPrefix(String prefix) {
+        PREFIX = prefix;
+    }
 
     public static String color(String text) {
         Matcher matcher = HEX_PATTERN.matcher(text);
@@ -81,13 +88,29 @@ public class ChatUtil {
         sender.sendMessage(color(msg));
     }
 
+    public static void sendMessage(CommandSender sender, String msg, boolean prefix) {
+        if (prefix) sender.sendMessage(color(PREFIX + " " + msg));
+        else sender.sendMessage(color(msg));
+    }
+
     public static void sendMessage(Audience sender, TextComponent component) {
         sender.sendMessage(component);
+    }
+
+    public static void sendMessage(Audience sender, TextComponent component, boolean prefix) {
+        if (prefix) sender.sendMessage(colors(PREFIX).appendSpace().append(component));
+        else sender.sendMessage(component);
     }
 
     public static void sendMessage(CommandSender sender, List<String> msg) {
         for (String text : color(msg)) {
             sender.sendMessage(text);
+        }
+    }
+
+    public static void sendMessage(CommandSender sender, List<String> msg, boolean prefix) {
+        for (String text : color(msg)) {
+            sendMessage(sender, text, prefix);
         }
     }
 
@@ -99,7 +122,13 @@ public class ChatUtil {
 
     public static void sendMessagee(Audience sender, List<TextComponent> msg) {
         for (TextComponent text : colorss(msg)) {
-            sender.sendMessage(text);
+            sendMessage(sender, text);
+        }
+    }
+
+    public static void sendMessagee(Audience sender, List<TextComponent> msg, boolean prefix) {
+        for (TextComponent text : colorss(msg)) {
+            sendMessage(sender, text, prefix);
         }
     }
 

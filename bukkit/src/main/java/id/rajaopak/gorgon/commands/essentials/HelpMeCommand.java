@@ -1,4 +1,4 @@
-package id.rajaopak.gorgon.commands;
+package id.rajaopak.gorgon.commands.essentials;
 
 import cloud.commandframework.annotations.Argument;
 import cloud.commandframework.annotations.CommandMethod;
@@ -6,11 +6,11 @@ import cloud.commandframework.annotations.CommandPermission;
 import cloud.commandframework.annotations.specifier.Greedy;
 import id.rajaopak.common.utils.ChatUtil;
 import id.rajaopak.gorgon.Gorgon;
+import id.rajaopak.gorgon.commands.BaseCommand;
 import id.rajaopak.gorgon.config.LanguageFile;
-import id.rajaopak.gorgon.enums.FilterState;
 import id.rajaopak.gorgon.enums.HelpMeState;
-import id.rajaopak.gorgon.module.helpme.gui.HelpMeGui;
 import id.rajaopak.gorgon.module.helpme.HelpMeData;
+import id.rajaopak.gorgon.module.helpme.gui.HelpMeGui;
 import id.rajaopak.gorgon.utils.PermissionChecker;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -38,13 +38,10 @@ public class HelpMeCommand extends BaseCommand {
     @CommandMethod("helpme [message]")
     @CommandPermission("gorgon.helpme.use")
     public void mainCommand(@NonNull CommandSender sender, @Nullable @Greedy @Argument(value = "message") String message) {
-        if (!PermissionChecker.check(sender, "helpme.use")) {
-            ChatUtil.sendMessage(sender, LanguageFile.getNoPermission());
-            return;
-        }
+        if (!PermissionChecker.check(sender, "helpme.use")) return;
 
         if (!(sender instanceof Player player)) {
-            ChatUtil.sendMessage(sender, LanguageFile.getCommandOnlyPlayer());
+            ChatUtil.sendMessage(sender, LanguageFile.getCommandOnlyPlayer(), true);
             return;
         }
 
@@ -54,9 +51,10 @@ public class HelpMeCommand extends BaseCommand {
             return;
         }
 
-//        if (this.plugin.getStaffHelpMeManager().checkIfStaff(player)) {
-//            return;
-//        }
+        if (this.plugin.getStaffHelpMeManager().checkIfStaff(player)) {
+            ChatUtil.sendMessage(sender, "&cYou are a staff, you can't do this!", true);
+            return;
+        }
 
         if (this.plugin.getHelpMeManager().containsPlayer(player.getUniqueId())) {
             ChatUtil.sendMessagee(Gorgon.getInstance().getAudiences().sender(player), List.of(
@@ -85,10 +83,7 @@ public class HelpMeCommand extends BaseCommand {
     @CommandMethod("helpme --finish")
     @CommandPermission("gorgon.helpme.staff")
     public void helpMeFinishCommand(@NonNull CommandSender sender) {
-        if (!PermissionChecker.check(sender, "helpme.staff")) {
-            ChatUtil.sendMessage(sender, LanguageFile.getNoPermission());
-            return;
-        }
+        if (!PermissionChecker.check(sender, "helpme.staff")) return;
 
         if (!(sender instanceof Player player)) {
             ChatUtil.sendMessage(sender, LanguageFile.getCommandOnlyPlayer());
@@ -110,26 +105,15 @@ public class HelpMeCommand extends BaseCommand {
         this.plugin.getHelpMeManager().notifyPlayerHelpMe(player, data);
     }
 
-    @CommandMethod("testhelpme")
-    public void test(@NonNull CommandSender sender) {
-
-        if (!(sender instanceof Player player)) {
-            ChatUtil.sendMessage(sender, LanguageFile.getCommandOnlyPlayer());
-            return;
-        }
-
-        HelpMeGui gui = new HelpMeGui(player);
-
-        //this.plugin.getHelpMeManager().addHelpMe(data.getHelpMeUUID(), data);
-        gui.helpMeHistoryPage(0, FilterState.ALL);
-    }
-
     @CommandMethod("initializedatatodatabase")
+    @CommandPermission("gorgon.test.initializehelpmedatabase")
     public void testDatabase(@NonNull CommandSender sender) {
         if (!(sender instanceof Player player)) {
             ChatUtil.sendMessage(sender, LanguageFile.getCommandOnlyPlayer());
             return;
         }
+
+        if (!PermissionChecker.check(sender, "test.initializehelpmedatabase")) return;
 
         HelpMeState[] states = {HelpMeState.WAITING, HelpMeState.ACCEPTED, HelpMeState.DECLINED, HelpMeState.FINISH};
 

@@ -10,10 +10,14 @@ repositories {
     maven {
         url 'https://repo.codemc.io/repository/maven-snapshots/'
     }
+    maven {
+        url 'https://repo.codemc.io/repository/maven-public/'
+    }
 }
 
 dependencies {
     implementation project(':common')
+
 
     // cloud command framework
     implementation 'cloud.commandframework:cloud-core:1.8.3'
@@ -29,6 +33,7 @@ dependencies {
 
     implementation 'com.zaxxer:HikariCP:4.0.3'
     implementation 'net.wesjd:anvilgui:1.6.5-SNAPSHOT'
+    implementation 'de.tr7zw:item-nbt-api-plugin:2.11.3'
 }
 
 task customFatJar(type: Jar) {
@@ -45,6 +50,7 @@ shadowJar {
     relocate 'net.kyori', 'id.rajaopak.libs.kyori'
     relocate 'net.wesjd.anvilgui', 'id.rajaopak.libs.anvilgui'
     relocate 'com.zaxxer.HikariCP', 'id.rajaopak.libs.hikaricp'
+    relocate 'de.tr7zw.nbtapi', 'id.rajaopak.libs.nbtapi'
 
     //archiveFileName = "Gorgon-" + project.getVersion() + "-" + System.currentTimeMillis() + ".jar"
     archiveFileName = "Gorgon-" + project.getVersion() + ".jar"
@@ -52,7 +58,7 @@ shadowJar {
     doLast {
         copy {
             from archivePath
-            into 'D:\\server\\lemontree\\plugins'
+            into 'D:\\server\\dev-19.4\\plugins'
         }
     }
 }

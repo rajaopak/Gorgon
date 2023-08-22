@@ -24,7 +24,15 @@ public class CustomConfig {
             file = new File(plugin.getDataFolder(), configName);
 
             if (!file.exists()) {
-                plugin.saveResource(configName, false);
+                if (plugin.getResource(configName) != null) {
+                    plugin.saveResource(configName, false);
+                } else {
+                    try {
+                        file.createNewFile();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
 
         } else {
@@ -36,7 +44,15 @@ public class CustomConfig {
             file = new File(plugin.getDataFolder() + File.separator + directory, configName);
 
             if (!file.exists()) {
-                plugin.saveResource(directory + File.separator + configName, false);
+                if (plugin.getResource(configName) != null) {
+                    plugin.saveResource(configName, false);
+                } else {
+                    try {
+                        file.createNewFile();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
 

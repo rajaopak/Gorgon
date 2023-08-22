@@ -1,8 +1,8 @@
-package id.rajaopak.gorgon.manager;
+package id.rajaopak.gorgon.module.helpme;
 
 import id.rajaopak.gorgon.Gorgon;
-import id.rajaopak.gorgon.gui.HelpMeGui;
-import id.rajaopak.gorgon.object.HelpMeData;
+import id.rajaopak.gorgon.module.helpme.gui.HelpMeGui;
+import id.rajaopak.gorgon.module.helpme.HelpMeData;
 import id.rajaopak.gorgon.utils.PermissionChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

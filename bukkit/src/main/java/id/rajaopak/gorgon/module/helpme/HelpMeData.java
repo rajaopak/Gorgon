@@ -1,4 +1,4 @@
-package id.rajaopak.gorgon.object;
+package id.rajaopak.gorgon.module.helpme;
 
 import id.rajaopak.gorgon.enums.HelpMeState;
 import lombok.Getter;

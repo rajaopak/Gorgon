@@ -13,21 +13,29 @@ import cloud.commandframework.paper.PaperCommandManager;
 import com.google.common.reflect.ClassPath;
 import id.rajaopak.common.OpakLibrary;
 import id.rajaopak.common.config.ConfigUpdater;
-import id.rajaopak.common.utils.Debug;
 import id.rajaopak.common.utils.ChatUtil;
+import id.rajaopak.common.utils.Debug;
 import id.rajaopak.common.utils.VersionChecker;
+import id.rajaopak.gorgon.config.CacheFile;
 import id.rajaopak.gorgon.config.ConfigFile;
 import id.rajaopak.gorgon.config.LanguageFile;
 import id.rajaopak.gorgon.database.Database;
 import id.rajaopak.gorgon.database.MySql;
+import id.rajaopak.gorgon.database.NoDatabase;
+import id.rajaopak.gorgon.listener.ChatListener;
 import id.rajaopak.gorgon.listener.JoinListener;
-import id.rajaopak.gorgon.manager.HelpMeManager;
-import id.rajaopak.gorgon.manager.StaffHelpMeManager;
+import id.rajaopak.gorgon.listener.PickUpItemListener;
+import id.rajaopak.gorgon.module.helpme.HelpMeManager;
+import id.rajaopak.gorgon.module.helpme.StaffHelpMeManager;
+import id.rajaopak.gorgon.structure.ConfirmationManager;
+import id.rajaopak.gorgon.structure.CooldownManager;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.translation.TranslationRegistry;
 import net.kyori.adventure.util.UTF8ResourceBundleControl;
 import org.bukkit.Bukkit;
@@ -43,8 +51,6 @@ import java.util.*;
 import java.util.function.Function;
 
 import static net.kyori.adventure.text.Component.text;
-
-;
 
 @Getter
 public final class Gorgon extends JavaPlugin {
@@ -65,9 +71,13 @@ public final class Gorgon extends JavaPlugin {
     private HelpMeManager helpMeManager;
     private StaffHelpMeManager staffHelpMeManager;
 
+    private ConfirmationManager confirmationManager;
+    private CooldownManager cooldownManager;
+
     private Database database;
 
     private transient ConfigFile configFile;
+    private transient CacheFile cacheFile;
     private transient ResourceBundle bundle;
 
     public static String tl(final String path, @Nullable final Object... objects) {
@@ -92,6 +102,7 @@ public final class Gorgon extends JavaPlugin {
 
         // Initialize config
         this.configFile = new ConfigFile("config.yml", null);
+        this.cacheFile = new CacheFile("cache.yml", null);
         this.debug = this.configFile.isDebug();
 
         serverName = this.configFile.getServerName();
@@ -115,18 +126,24 @@ public final class Gorgon extends JavaPlugin {
 
         registry.registerAll(Locale.ENGLISH, bundle, false);
 
-        // Initialize database
-        MySql mysql = new MySql(this);
+        ChatUtil.setPrefix(LanguageFile.getPrefix());
 
-        Debug.info("Initialize database...", true);
-        long time = System.currentTimeMillis();
-        if (mysql.connect()) {
-            this.database = mysql;
-            this.database.initialize();
-            Debug.info("Successfully connect into database! took " + (System.currentTimeMillis() - time) + " ms.", true);
+        // Initialize database
+        if (this.configFile.isDatabaseEnable()) {
+            MySql mysql = new MySql(this);
+
+            Debug.info("Initialize database...", true);
+            long time = System.currentTimeMillis();
+            if (mysql.connect()) {
+                this.database = mysql;
+                this.database.initialize();
+                Debug.info("Successfully connect into database! took " + (System.currentTimeMillis() - time) + " ms.", true);
+            } else {
+                Debug.error("Failed when trying to connect into database!", true);
+                this.getServer().getPluginManager().disablePlugin(this);
+            }
         } else {
-            Debug.error("Failed when trying to connect into database!", true);
-            this.getServer().getPluginManager().disablePlugin(this);
+            this.database = new NoDatabase();
         }
 
         // Initialize command and listener
@@ -136,11 +153,16 @@ public final class Gorgon extends JavaPlugin {
         this.helpMeManager = new HelpMeManager(this);
         this.staffHelpMeManager = new StaffHelpMeManager(this);
 
+        this.confirmationManager = new ConfirmationManager();
+        this.cooldownManager = new CooldownManager();
+
         // Initialize Version Support
         //this.loadMultiVersion();
 
         // Initialize Events
         Bukkit.getServer().getPluginManager().registerEvents(new JoinListener(), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new PickUpItemListener(this), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new ChatListener(), this);
 
         Debug.info("Plugin Successfully enabled!");
     }
@@ -159,6 +181,9 @@ public final class Gorgon extends JavaPlugin {
         // clear data manager cache
         this.helpMeManager.clear();
         this.staffHelpMeManager.clear();
+
+        this.confirmationManager.clear();
+        this.cooldownManager.clear();
     }
 
     @SneakyThrows
@@ -193,18 +218,22 @@ public final class Gorgon extends JavaPlugin {
         }
 
         new MinecraftExceptionHandler<CommandSender>()
-                .withInvalidSyntaxHandler()
-                .withInvalidSenderHandler()
                 .withArgumentParsingHandler()
                 .withCommandExecutionHandler()
+                .withInvalidSyntaxHandler()
+                .withInvalidSenderHandler()
+                .withNoPermissionHandler()
                 .withDecorator(
                         component -> text()
-                                .append(text(ChatUtil.color(LanguageFile.getPrefix())))
+                                .append(text("[").color(NamedTextColor.DARK_GRAY))
+                                .append(MiniMessage.miniMessage().deserialize("<gradient:#0040FF:#00FBFF>Gorgon</gradient>"))
+                                .append(text("]").color(NamedTextColor.DARK_GRAY))
+                                .appendSpace()
                                 .append(component).build()
                 ).apply(this.manager, this.audiences::sender);
 
         this.minecraftHelp.setHelpColors(MinecraftHelp.HelpColors.of(
-                TextColor.color(5592405),
+                TextColor.color(191, 255, 255),
                 TextColor.color(16777045),
                 TextColor.color(11184810),
                 TextColor.color(5635925),

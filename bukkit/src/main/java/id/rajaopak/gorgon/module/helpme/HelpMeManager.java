@@ -1,10 +1,10 @@
-package id.rajaopak.gorgon.manager;
+package id.rajaopak.gorgon.module.helpme;
 
 import id.rajaopak.common.utils.ChatUtil;
 import id.rajaopak.gorgon.Gorgon;
 import id.rajaopak.gorgon.config.LanguageFile;
 import id.rajaopak.gorgon.enums.HelpMeState;
-import id.rajaopak.gorgon.object.HelpMeData;
+import id.rajaopak.gorgon.module.helpme.HelpMeData;
 import id.rajaopak.gorgon.utils.VanishChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

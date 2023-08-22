@@ -6,7 +6,7 @@ import id.rajaopak.common.utils.Debug;
 import id.rajaopak.gorgon.Gorgon;
 import id.rajaopak.gorgon.enums.FilterState;
 import id.rajaopak.gorgon.enums.HelpMeState;
-import id.rajaopak.gorgon.object.HelpMeData;
+import id.rajaopak.gorgon.module.helpme.HelpMeData;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ public class MySql implements Database {
     public boolean connect() {
         HikariConfig hikariConfig = new HikariConfig();
 
-        hikariConfig.setPoolName("ChatLoggerMySQLPool");
+        hikariConfig.setPoolName("GorgonMysqlPool");
 
         hikariConfig.setMaximumPoolSize(poolSize);
         hikariConfig.setMaxLifetime(maxLifetime * 1000L);
@@ -83,7 +83,7 @@ public class MySql implements Database {
         try {
             dataSource.getConnection();
         } catch (SQLException e) {
-            Debug.error("Error while trying to connect to database!", e, true);
+            Debug.error("Error while trying to connect to database!", e);
             return false;
         }
 
@@ -380,6 +380,11 @@ public class MySql implements Database {
             return 0;
         }
         return 0;
+    }
+
+    @Override
+    public CompletableFuture<Void> setStaffPoint(UUID uuid, long point) {
+        return null;
     }
 
     @Override

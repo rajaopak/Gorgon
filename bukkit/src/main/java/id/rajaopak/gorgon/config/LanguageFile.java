@@ -18,6 +18,18 @@ public class LanguageFile {
         return tl("command.onlyplayer");
     }
 
+    public static String getPlayerNotFound() {
+        return tl("command.playernotfound");
+    }
+
+    public static String getSpecifyPlayer() {
+        return tl("command.specifyplayer");
+    }
+
+    public static String getPluginReloading() {
+        return tl("plugin.reload");
+    }
+
     public static String getHelpMeAccept(Player player) {
         return tl("helpme.accept", player.getName());
     }
@@ -44,6 +56,10 @@ public class LanguageFile {
 
     public static String getHelpMeTargetOffline(String name) {
         return tl("helpme.target.offline", name);
+    }
+
+    public static String getTrollBanItemPickUp() {
+        return tl("troll.banitem.pickup");
     }
 
 }

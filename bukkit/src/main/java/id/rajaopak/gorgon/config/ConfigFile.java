@@ -16,6 +16,10 @@ public class ConfigFile extends CustomConfig {
         return getConfig().getString("server-name");
     }
 
+    public boolean isDatabaseEnable() {
+        return getConfig().getBoolean("database.enable");
+    }
+
     public String getHost() {
         return getConfig().getString("database.host");
     }
@@ -50,5 +54,21 @@ public class ConfigFile extends CustomConfig {
 
     public int getMaxLifeTime() {
         return this.getConfig().getInt("database.max-lifetime", 1800000);
+    }
+
+    public boolean isUseConfirmation() {
+        return this.getConfig().getBoolean("commands.use-confirmation", false);
+    }
+
+    public int getMinConfirmation() {
+        return this.getConfig().getInt("commands.min-confirmation", 10);
+    }
+
+    public boolean isUseCooldown() {
+        return this.getConfig().getBoolean("use-cooldown");
+    }
+
+    public int getCooldownTime() {
+        return this.getConfig().getInt("cooldown-time");
     }
 }

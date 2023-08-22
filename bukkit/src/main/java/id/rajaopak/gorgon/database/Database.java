@@ -1,8 +1,7 @@
 package id.rajaopak.gorgon.database;
 
 import id.rajaopak.gorgon.enums.FilterState;
-import id.rajaopak.gorgon.enums.HelpMeState;
-import id.rajaopak.gorgon.object.HelpMeData;
+import id.rajaopak.gorgon.module.helpme.HelpMeData;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +12,7 @@ public interface Database {
 
     void initialize();
 
+    // HelpMe manager
     CompletableFuture<Void> setHelpMeData(HelpMeData data);
 
     CompletableFuture<Optional<HelpMeData>> getHelpMeData(UUID uuid);
@@ -26,6 +26,10 @@ public interface Database {
     boolean hasHelpMe(UUID uuid);
 
     int sizeHelpMe(FilterState filter);
+
+    // Point manager
+
+    CompletableFuture<Void> setStaffPoint(UUID uuid, long point);
 
     void close();
 

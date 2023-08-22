@@ -1,4 +1,4 @@
-package id.rajaopak.gorgon.gui;
+package id.rajaopak.gorgon.module.helpme.gui;
 
 import id.rajaopak.common.gui.GuiBuilder;
 import id.rajaopak.common.utils.ChatSession;
@@ -7,10 +7,11 @@ import id.rajaopak.common.utils.ItemBuilder;
 import id.rajaopak.gorgon.Gorgon;
 import id.rajaopak.gorgon.enums.FilterState;
 import id.rajaopak.gorgon.enums.HelpMeState;
-import id.rajaopak.gorgon.object.HelpMeData;
+import id.rajaopak.gorgon.module.helpme.HelpMeData;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -102,7 +103,7 @@ public class HelpMeGui {
     }
 
     public void helpMeHistoryPage(int page, FilterState filter) {
-        this.gui = new GuiBuilder(54, "&2HelpMe History");
+        this.gui = new GuiBuilder(54, "&2HelpMe History (&e" + page + "&2)");
 
         this.gui.setHeaderAndFooter(ItemBuilder.from(Material.GRAY_STAINED_GLASS_PANE).build());
 
@@ -158,7 +159,7 @@ public class HelpMeGui {
             }
         });
 
-        this.gui.setItem(53, ItemBuilder.from(Material.ANVIL).setName("&eSearch by name").build(), event -> setHelpMeReason().thenAccept(s ->
+        this.gui.setItem(53, ItemBuilder.from(Material.ANVIL).setName("&eSearch by name/uuid").build(), event -> setHelpMeReason().thenAccept(s ->
             Gorgon.getInstance().getServer().getScheduler().runTask(Gorgon.getInstance(), () -> helpMeHistoryPage(0, FilterState.PLAYER.setObject(s)))));
 
         int maxPerPage = 36;
@@ -179,6 +180,7 @@ public class HelpMeGui {
         List<HelpMeData> dataList = Gorgon.getInstance().getDatabase().getHelpMeData(36, page * maxPerPage, filter).join().get();
         this.gui.setItem(4, ItemBuilder.from(Material.WRITABLE_BOOK).setName("&2HelpMe Stats").setLore(
                 "&aTotal HelpMe: &7" + size,
+                "&aTotal Page: &7" + (size / maxPerPage),
                 "&aData showing: &7" + min + " - " + max,
                 "&aFilter state: &7" + filter + " " + (filter.getObject() != null ? "(" + filter.getObject() + ")" : ""),
                 "",
@@ -187,16 +189,12 @@ public class HelpMeGui {
 
         // previous buttom
         if (page > 0) {
-            this.gui.setItem(48, ItemBuilder.from(Material.ARROW).setName("&7Previous page").build(), event -> {
-                helpMeHistoryPage(page - 1, filter);
-            });
+            this.gui.setItem(48, ItemBuilder.from(Material.ARROW).setName("&7Previous page").build(), event -> helpMeHistoryPage(page - 1, filter));
         }
 
         // next button
         if (!(size < ((page + 1) * maxPerPage))) {
-            this.gui.setItem(50, ItemBuilder.from(Material.ARROW).setName("&7Next page").build(), event -> {
-                helpMeHistoryPage(page + 1, filter);
-            });
+            this.gui.setItem(50, ItemBuilder.from(Material.ARROW).setName("&7Next page").build(), event -> helpMeHistoryPage(page + 1, filter));
         }
 
         dataList.forEach(data -> this.gui.addItem(ItemBuilder.from(Material.PAPER)
@@ -210,12 +208,24 @@ public class HelpMeGui {
                         "&aStaff-Name: &7" + data.getStaffName(),
                         "&aAccepted-Time: &7" + (data.getAcceptedTime() == null ? "none" : DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").format(Timestamp.from(data.getAcceptedTime()).toLocalDateTime())),
                         "&aStatus: &7" + data.getState().getStatus(),
+                        "&aServeer: &7" + data.getServerName(),
                         "&aMessage: &7")
                 .addLore(ChatUtil.wordWrap("&7" + data.getMessage(), 25))
-                .build()));
+                .build(), e -> {
+            this.gui.close(this.player);
+            ChatUtil.sendMessage(Gorgon.getInstance().getAudiences().sender(this.player), text("[").color(NamedTextColor.DARK_GRAY).decorate(TextDecoration.BOLD)
+                    .append(text("Click Here").color(NamedTextColor.GREEN)
+                            .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, data.getHelpMeUUID().toString()))
+                            .hoverEvent(HoverEvent.showText(ChatUtil.colors("&a" + data.getHelpMeUUID())))
+                    ).append(text("]").color(NamedTextColor.DARK_GRAY).decorate(TextDecoration.BOLD)));
+        }));
 
         this.gui.setFilterItem(ItemBuilder.from(Material.LIME_STAINED_GLASS_PANE).build());
         this.gui.open(this.player);
+    }
+
+    public void pendingRequestPage(int page) {
+
     }
 
     private @NotNull CompletableFuture<String> setHelpMeReason() {

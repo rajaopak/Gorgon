@@ -4,6 +4,7 @@ debug: true
 server-name: "minecraft"
 
 database:
+  enable: false
   database: ""
   host: "localhost"
   port: 3306
@@ -13,3 +14,9 @@ database:
   verify-certificate: true
   pool-size: 30
   max-lifetime: 1800000
+
+commands:
+  use-confirmation: true
+  min-confirmation: 10
+  use-cooldown: true
+  cooldown-time: 5 #seconds
